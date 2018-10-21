@@ -39,7 +39,7 @@ class sccontent(models.Model):
     file1 = models.CharField(max_length=50, null=True)
     file2 = models.CharField(max_length=50, null=True)
 
-# 攻略评论
+# # 攻略评论
 class scommit(models.Model):
     commit = models.TextField()
     time = models.DateTimeField(max_length=20)

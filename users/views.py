@@ -161,10 +161,7 @@ def getusermessage(request,id):
 def updateusermessage(request):
     if request.method=="POST":
         usermessage = request.POST.get("user")
-        print(usermessage)
         usermessage = json.loads(usermessage)
-        print(usermessage["username"])
-        print(usermessage)
         newuser = models.user.objects.get(id = usermessage["id"])
         newuser.username = usermessage["username"]
         newuser.birthday = usermessage["birthday"]
@@ -176,7 +173,6 @@ def updateusermessage(request):
         return HttpResponse("成功")
     else:
         return HttpResponse("这里是请求")
-
 
 # 查询关注人数
 def myfocusnum(request,id):
@@ -193,7 +189,6 @@ def myfocusnum(request,id):
 
 # 查询用户发布的帖子数
 
-
 # 查询关注用户信息
 def myfocus(request, id):
     usermessage = list(),
@@ -203,7 +198,6 @@ def myfocus(request, id):
     for i in range(len(focusid)):
         message.append(list(models.user.objects.filter(id = focusid[i]["uid"]).values("id","username","icno__imageurl"))[0])
     return HttpResponse(message)
-
 
 # 查询神秘代码
 def searchsecrit(request,id):
@@ -231,6 +225,7 @@ def addtravelnotes(request):
         return HttpResponse("error")
 
     # 查询用户关注
+# 查询用户关注
 def focus(request,uid):
     if request.method == "GET":
         try:
@@ -244,16 +239,95 @@ def focus(request,uid):
     elif request.method == "POST":
         return JsonResponse({"code": "500"})
 
-# 取消关注
+# 取消关注(返回状态码————————)
 def unfocus(request,uid,uid_id):
     try:
+        # 把用户从关注表中删除
         unfuser = models.focus.objects.filter(userid=uid,uid_id=uid_id).delete()
-        return JsonResponse({"code": "200"})
+        # 查询最新的关注人数
+        upfoc = models.focus.objects.filter(userid=uid).count()
+        return JsonResponse({"count": upfoc})
     except Exception as ex:
         print(ex)
         return JsonResponse({"code": "505"})
 
+# 查询用户收藏攻略
+def colstrategy(request,uid):
+    try:
+        colstr = models.colstrategy.objects.filter(cuser_id=uid).order_by("-id").values('cstrategy__title','cstrategy__good','cstrategy__view','cstrategy__scover__url')
+        colstr = list(colstr)
+        colstr = json.dumps(colstr)
+        return HttpResponse(colstr)
+    except Exception as ex:
+        print(ex)
+        return JsonResponse({"code": "505"})
 
+# 查看用户收藏游记
+def coltravelnote(request,uid):
+    try:
+        coltra = models.coltravelnote.objects.filter(cuser_id=uid).order_by("-id").values('ctravelnote__title','ctravelnote__good','ctravelnote__view','ctravelnote__cover__url')
+        coltra = list(coltra)
+        coltra = json.dumps(coltra)
+        return HttpResponse(coltra)
+    except Exception as ex:
+        print(ex)
+        return JsonResponse({"code": "505"})
 
+# 取消用户收藏攻略
+def uncolstrategy(request,cstrid,uid):
+    try:
+        # 从关注表中删除
+        uncol = models.colstrategy.objects.filter(cstrategy_id=cstrid,cuser_id=uid).delete()
+        # 更新收藏数量
+        upcol = models.colstrategy.objects.filter(cuser_id=uid).count()
+        return JsonResponse({"count":upcol})
+    except Exception as ex:
+        print(ex)
+        return JsonResponse({"code": "505"})
 
+# 查询用户积分和对应称号
+def usermark(request,uid):
+    try:
+        if request.method == "GET":
+            # 积分数
+            mark = models.user.objects.filter(id=uid).values('mark')
+            mark = list(mark)
+            print(mark)
+            # 积分称号
+            # 获取最大最小积分
+            rangemark = models.achievement.objects.filter().values('name','maxstandard','minstandard')
+            rangemark = list(rangemark)
+            for i in rangemark:
+                imax=i["maxstandard"]
+                imin=i["minstandard"]
 
+                #根据最大积分最小积分查积分范围所在的称号
+                # 找到mark对应的范围
+                iname = models.user.objects.filter(mark__range=(int(imin),int(imax))).count()
+                if iname>0:
+                    # 根据范围找到对应的称号
+                    achieve = models.achievement.objects.filter(minstandard=imin).values('name')
+                    achieve = list(achieve)
+                    print(achieve)
+            return JsonResponse({"mark":mark[0]["mark"],"achieve":list(achieve)[0]["name"]},json_dumps_params={"ensure_ascii":False})
+            # return HttpResponse(mark)
+        elif request.method == "POST":
+            return JsonResponse({"code": "500"})
+    except Exception as ex:
+        print(ex)
+        return JsonResponse({"code": "505"})
+
+# 更新用户积分
+def updatemark(request,uid,mark):
+    try:
+        # 查询用户现在的积分
+        nomark = models.user.objects.filter(id=uid).values('mark')
+        nomark = list(nomark)
+        nomark = nomark[0]["mark"]
+        # 更新
+        udnark = models.user.objects.filter(id=uid).update(mark=int(nomark)+int(mark))
+
+        return JsonResponse({"code": "200"})
+    except Exception as ex:
+        print(ex)
+        return JsonResponse({"code": "505"})

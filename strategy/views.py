@@ -113,7 +113,6 @@ def insertdetail(request):
 # 卡片展示所有攻略
 def showall(request):
     try:
-    #
         allstrategy = models.strategy.objects.filter().values('scover__url','condition__strategy__title','condition__strategy__good','condition__strategy__view','condition__strategy__userid','condition__strategy__userid')
         listallstrategy = list(allstrategy)
 
@@ -159,7 +158,7 @@ def searchbyuserid(request):
     if request.method=="GET":
         try:
             uid = request.GET.get('userid')
-            strategy = models.strategy.objects.filter(userid=uid).values('scover__url','condition__strategy__title','condition__strategy__good','condition__strategy__view','condition__strategy__userid','condition__strategy__userid')
+            strategy = models.strategy.objects.filter(userid=uid).values('scover__url','condition__strategy__title','condition__strategy__good','condition__strategy__view','condition__strategy__userid')
             strategy = list(strategy)
             strategy = json.dumps(strategy)
             return HttpResponse(strategy)
@@ -171,11 +170,12 @@ def searchbyuserid(request):
 
 # 攻略详情展示
 def showdetail(request,postid):
-    if request.method=="POST":
+    if request.method=="GET":
         try:
             contenttop = models.sccontent.objects.filter(sid=postid).values('contents')
+            # contenttop = list[contenttop]
+            print(contenttop)
             commitbtm = models.scommit.objects.filter(sid=postid).values("commit","userid__username",'time')
-
             # 时间转换
             for item in commitbtm:
                 item["time"] = item["time"].strftime("%Y-%m-%d")
@@ -183,7 +183,7 @@ def showdetail(request,postid):
         except Exception as ex:
             print(ex)
             return JsonResponse({"code":"500"})
-    elif request.method=="GET":
+    elif request.method=="POST":
         return JsonResponse({"code":"505"})
 
 # 新建攻略
@@ -201,20 +201,21 @@ def add(request):
             "condition_id": data1["condition"],
         }
         sstrategy = models.strategy.objects.create(**data_strategy)
-
         # contents
         data_contents = {
             "contents": data1["contents"],
             "sid_id":sstrategy.id
         }
         scontent = models.sccontent.objects.create(**data_contents)
-
         # cover
         data_cover = {
             "url":data1["url"],
             "sid_id": sstrategy.id
         }
         scover = models.scover.objects.create(**data_cover)
+
+
+
         return JsonResponse({"code": "200"})
     except Exception as ex:
         print(ex)

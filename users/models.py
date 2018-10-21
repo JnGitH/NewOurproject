@@ -1,9 +1,8 @@
 from django.db import models
 
-# from ..strategy.models import *
-# from ..travelnote.models import *
 from travelnote.models import *
 from strategy.models import *
+
 
 # 登录表
 class login(models.Model):
@@ -38,19 +37,20 @@ class focus(models.Model):
 
 
 # 攻略收藏表
-# class collectstrategy(models.Model):
-    # userid = models.IntegerField(max_length=15)
-    # strategyid = models.IntegerField(max_length=15)
-    # scollect = models.ForeignKey(to='strategy', to_field='id', on_delete=True)
-    # scollected = models.ForeignKey(to='user', to_field='id', on_delete=True)
-# 游记收藏表
-# class collecttravelnote(models.Model):
-#     userid = models.IntegerField(max_length=15)
-#     travelnoteid = models.IntegerField(max_length=15)
-#     tcollect = models.ForeignKey(to='travelnote', to_field='id', on_delete=models.CASCADE)
-#     tcollected = models.ForeignKey(to='user', to_field='id', on_delete=models.CASCADE)
+class colstrategy(models.Model):
+    cstrategy = models.ForeignKey(to='strategy.strategy', to_field='id', on_delete=True)
+    cuser = models.ForeignKey(to='user', to_field='id', on_delete=True)
 
+# 游记收藏表
+class coltravelnote(models.Model):
+    ctravelnote = models.ForeignKey(to='travelnote.travelnote', to_field='id', on_delete=models.CASCADE)
+    cuser = models.ForeignKey(to='user', to_field='id', on_delete=models.CASCADE)
 
 # 成就表
+class achievement(models.Model):
+    minstandard = models.CharField(max_length=30,default=1)
+    maxstandard = models.CharField(max_length=30,default=1)
+    name = models.CharField(max_length=30)
+
 
 

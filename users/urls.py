@@ -17,6 +17,19 @@ urlpatterns = [
     url(r'addtravelnotes/',views.addtravelnotes, name="addtravelnotes"),
     #查询用户关注
     url(r'focus/(?P<uid>\w+)/$',views.focus, name="focus"),
-    # 取消用户关注
-    url(r'unfocus/(?P<uid>\w+)/(?P<uid_id>\w+)/$',views.unfocus, name="unfocus")
+    #取消用户关注
+    url(r'unfocus/(?P<uid>\w+)/(?P<uid_id>\w+)/$',views.unfocus, name="unfocus"),
+    #查询用户收藏攻略
+    url(r'colstrategy/(?P<uid>\w+)/$',views.colstrategy, name="colstrategy"),
+    #查看用户收藏游记
+    url(r'coltravelnote/(?P<uid>\w+)/$', views.coltravelnote, name="coltravelnote"),
+    #取消用户收藏攻略
+    url(r'uncolstrategy/(?P<cstrid>\w+)/(?P<uid>\w+)/$', views.uncolstrategy, name="uncolstrategy"),
+    #查询用户积分
+    url(r'usermark/(?P<uid>\w+)/$', views.usermark, name="usermark"),
+    # 更新用户积分
+    url(r'updatemark/(?P<uid>\w+)/(?P<mark>\w+)/$', views.updatemark, name="updatemark")
 ]
+
+
+
