@@ -15,5 +15,8 @@ urlpatterns = [
     url(r'updateusermessage/',views.updateusermessage, name="updateusermessage"),
     url(r'searchsecrit/(?P<id>\w+)/$',views.searchsecrit, name="searchsecrit"),
     url(r'addtravelnotes/',views.addtravelnotes, name="addtravelnotes"),
-
+    #查询用户关注
+    url(r'focus/(?P<uid>\w+)/$',views.focus, name="focus"),
+    # 取消用户关注
+    url(r'unfocus/(?P<uid>\w+)/(?P<uid_id>\w+)/$',views.unfocus, name="unfocus")
 ]

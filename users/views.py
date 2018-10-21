@@ -111,9 +111,7 @@ def regist(request):
             "telephone":usermsg["telephone"],
             "password":usermsg["password"]
         }
-        # print(usermsg)
         # 查询telephone是否存在
-        # print(usermsg["telephone"])
         user = models.login.objects.filter(telephone=usermsg["telephone"])
         # print(user)
         if len(user):
@@ -231,3 +229,31 @@ def addtravelnotes(request):
         return JsonResponse({"code": "200"})
     else:
         return HttpResponse("error")
+
+    # 查询用户关注
+def focus(request,uid):
+    if request.method == "GET":
+        try:
+            fuser = models.focus.objects.filter(userid=uid).order_by("-uid_id").values('uid_id')
+            fuser = list(fuser)
+            print(fuser)
+            return JsonResponse({"fuser":fuser})
+        except Exception as ex:
+            print(ex)
+            return JsonResponse({"code": "505"})
+    elif request.method == "POST":
+        return JsonResponse({"code": "500"})
+
+# 取消关注
+def unfocus(request,uid,uid_id):
+    try:
+        unfuser = models.focus.objects.filter(userid=uid,uid_id=uid_id).delete()
+        return JsonResponse({"code": "200"})
+    except Exception as ex:
+        print(ex)
+        return JsonResponse({"code": "505"})
+
+
+
+
+
