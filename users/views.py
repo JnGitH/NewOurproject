@@ -326,7 +326,6 @@ def updatemark(request,uid,mark):
         nomark = nomark[0]["mark"]
         # 更新
         udnark = models.user.objects.filter(id=uid).update(mark=int(nomark)+int(mark))
-
         return JsonResponse({"code": "200"})
     except Exception as ex:
         print(ex)

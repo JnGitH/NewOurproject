@@ -2,9 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, request
 from . import models
 import json
-from users import models
+from users.views import updatemark
 from django.db import connection
-
 
 # Create your views here.
 
@@ -22,7 +21,6 @@ from django.db import connection
 #     except Exception as ex:
 #         print(ex)
 #         return JsonResponse({"code":"500"})
-
 
 def insertdetail(request):
     if request.method == "GET":
@@ -189,6 +187,20 @@ def showdetail(request,postid):
 # 新建攻略
 def add(request):
     try:
+        # test data
+        # data1={
+        #         "title":"hoooooooooohhhhh",
+        #         "state":"hhhh",
+        #         "condition_id":2,
+        #         "cover":"oooo",
+        #         "time":"2018-9-4",
+        #     "good":11,
+        #     "view":66,
+        #     "userid_id":2,
+        #     "condition":2,
+        #     "contents":"1212121212121",
+        #     "url":"3333333333"
+        # }
         data1 =json.loads(request.body)
         # strategy
         data_strategy = {
@@ -198,7 +210,7 @@ def add(request):
             "good":data1["good"],
             "view":data1["view"],
             "userid_id": data1["userid_id"],
-            "condition_id": data1["condition"],
+            "condition_id": data1["condition"]
         }
         sstrategy = models.strategy.objects.create(**data_strategy)
         # contents
@@ -213,10 +225,16 @@ def add(request):
             "sid_id": sstrategy.id
         }
         scover = models.scover.objects.create(**data_cover)
-
-
-
-        return JsonResponse({"code": "200"})
+        # 新建攻略后更新用户积分
+        if sstrategy and scontent and scover:
+            # 新建攻略用户所得积分
+            mark=30
+            updatemark(request,data1["userid_id"],mark)
+            # 更新成功
+            return  JsonResponse({"code": "200"})
+        else:
+            # 更新失败
+            return  JsonResponse({"code": "500"})
     except Exception as ex:
         print(ex)
         return JsonResponse({"code": "500"})

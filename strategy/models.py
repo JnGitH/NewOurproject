@@ -11,10 +11,9 @@ class strategy(models.Model):
     state = models.CharField(max_length=100)
     time = models.DateTimeField(max_length=20)
     good = models.IntegerField()
-    # 浏览量
+    # 浏览量python manage.py makemigrations
     view = models.IntegerField()
     userid = models.ForeignKey(to='users.user',to_field='id',on_delete=models.CASCADE,default=1)
-
     condition = models.ForeignKey(to='condition',to_field='id', on_delete=models.CASCADE)
     file1 = models.CharField(max_length=100, null=True)
     file2 = models.CharField(max_length=100, null=True)

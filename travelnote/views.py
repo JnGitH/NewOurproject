@@ -39,7 +39,6 @@ def gettravelnotedetail(request,id):
         return HttpResponse(json.dumps(detail))
 
 
-
 # 普通搜索功能
 def searchbysome(request):
     pass
